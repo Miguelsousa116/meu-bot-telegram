@@ -44,21 +44,16 @@ def enviar_boas_vindas(mensagem):
     except Exception as e:
         print(f"Erro ao guardar utilizador: {e}")
 
-    # 2. Mensagem enviada para o cliente
+    # 2. Mensagem enviada para o cliente (com o mínimo de 20€)
     texto = (
         "🔥 *BEM-VINDO AO JACKPOT ZONE!*\n\n"
         "> 🎁 *PROMOÇÃO EXCLUSIVA DE HOJE:*\n"
         "> \n"
-        "> ➡️ *Recebes mais 20 gratis*\n"
-        "> ➡️ *Mais bonus buy na slot big bass 1000*\n"
+        "> ➡️ *Deposita no mínimo 20€ e ganhas +20€ grátis*\n"
+        "> ➡️ *Mais bonus buy na slot Big Bass 1000*\n"
         "> ➡️ *Acesso Instantâneo à plataforma VIP*\n\n"
         "👇 Clica no botão abaixo para abrir a plataforma e resgatar a tua promoção:"
     )
     bot.send_message(mensagem.chat.id, texto, parse_mode="Markdown", reply_markup=menu_afiliado())
 
-@bot.message_handler(func=lambda msg: True)
-def resposta_padrao(mensagem):
-    texto = "👇 Clica no botão abaixo para abrir a plataforma:"
-    bot.send_message(mensagem.chat.id, texto, reply_markup=menu_afiliado())
-
-bot.polling()
+@bot.

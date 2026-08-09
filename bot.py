@@ -1,3 +1,4 @@
+import os
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -25,26 +26,32 @@ def enviar_boas_vindas(mensagem):
     first_name = mensagem.from_user.first_name
     username = mensagem.from_user.username or "Sem username"
 
-    # 1. Guarda o ID no ficheiro e avisa-te no Telegram
+    # 1. Registar utilizador em segurança
     try:
-        with open("utilizadores.txt", "a+") as file:
-            file.seek(0)
-            lista = file.read().splitlines()
-            if str(user_id) not in lista:
-                file.write(f"{user_id}\n")
-                
-                # Avisa-te no teu Telegram privado sobre o novo membro
-                msg_aviso = (
-                    f"🔔 *NOVO UTILIZADOR NO BOT!*\n\n"
-                    f"👤 *Nome:* {first_name}\n"
-                    f"🔗 *User:* @{username}\n"
-                    f"🆔 *ID:* {user_id}"
-                )
-                bot.send_message(TEU_CHAT_ID, msg_aviso, parse_mode="Markdown")
-    except Exception as e:
-        print(f"Erro ao guardar utilizador: {e}")
+        # Cria o ficheiro se não existir
+        if not os.path.exists("utilizadores.txt"):
+            with open("utilizadores.txt", "w") as f:
+                pass
 
-    # 2. Mensagem enviada para o cliente (com o mínimo de 20€)
+        with open("utilizadores.txt", "r") as f:
+            lista = f.read().splitlines()
+
+        if str(user_id) not in lista:
+            with open("utilizadores.txt", "a") as f:
+                f.write(f"{user_id}\n")
+            
+            # Notificação para o teu Telegram
+            msg_aviso = (
+                f"🔔 *NOVO UTILIZADOR NO BOT!*\n\n"
+                f"👤 *Nome:* {first_name}\n"
+                f"🔗 *User:* @{username}\n"
+                f"🆔 *ID:* {user_id}"
+            )
+            bot.send_message(TEU_CHAT_ID, msg_aviso, parse_mode="Markdown")
+    except Exception as e:
+        print(f"Erro no registo: {e}")
+
+    # 2. Mensagem para o cliente
     texto = (
         "🔥 *BEM-VINDO AO JACKPOT ZONE!*\n\n"
         "> 🎁 *PROMOÇÃO EXCLUSIVA DE HOJE:*\n"
@@ -56,4 +63,9 @@ def enviar_boas_vindas(mensagem):
     )
     bot.send_message(mensagem.chat.id, texto, parse_mode="Markdown", reply_markup=menu_afiliado())
 
-@bot.
+@bot.message_handler(func=lambda msg: True)
+def resposta_padrao(mensagem):
+    texto = "👇 Clica no botão abaixo para abrir a plataforma:"
+    bot.send_message(mensagem.chat.id, texto, reply_markup=menu_afiliado())
+
+bot.polling(none_stop=True)

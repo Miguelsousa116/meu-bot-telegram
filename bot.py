@@ -28,7 +28,6 @@ def enviar_boas_vindas(mensagem):
 
     # 1. Registar utilizador em segurança
     try:
-        # Cria o ficheiro se não existir
         if not os.path.exists("utilizadores.txt"):
             with open("utilizadores.txt", "w") as f:
                 pass

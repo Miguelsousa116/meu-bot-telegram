@@ -4,7 +4,6 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-# Servidor para o Render
 class KeepAliveHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -21,7 +20,9 @@ def iniciar_servidor():
 CHAVE_API = "8529787659:AAEspqZLGxIvsDD27DQ1Hz_VTcwlnEmu64A"
 bot = telebot.TeleBot(CHAVE_API)
 
-# Lista de membros
+# Link direto e permanente da imagem hospedada (não precisa de ficheiros internos)
+URL_FINAL = "https://i.ibb.co/L519V3r/1000017729.png"
+
 membros_registados = set()
 
 @bot.message_handler(commands=['start'])
@@ -31,21 +32,24 @@ def enviar_start(mensagem):
     
     texto = (
         "🔥 BEM-VINDO AO JACKPOT ZONE! 🔥\n\n"
+        "🎁 PROMOÇÃO EXCLUSIVA DE HOJE:\n\n"
+        "➡️ Deposita no mínimo 20€ e ganhas +20€ grátis!\n"
+        "➡️ Mais Bónus Buy de graça na slot Big Bass 1000!\n"
+        "➡️ Acesso Instantâneo à plataforma VIP!\n\n"
         f"👥 Membros no Bot: {total_membros}\n\n"
-        "👇 Clica no botão abaixo:"
+        "👇 Clica no botão abaixo para abrir a plataforma e resgatar a tua promoção:"
     )
     
     teclado = InlineKeyboardMarkup()
-    teclado.add(InlineKeyboardButton("🎰 ABRIR PLATAFORMA", url="https://partners.meratrack.xyz/click?o=901&a=1367"))
+    teclado.add(InlineKeyboardButton("🎰 ABRIR PLATAFORMA & GANHAR BÓNUS", url="https://partners.meratrack.xyz/click?o=901&a=1367"))
+    teclado.add(InlineKeyboardButton("💬 Suporte VIP", url="https://t.me/Paulo_miguel_23"))
 
-    # AQUI ESTÁ A MUDANÇA: Abrimos a foto que está na mesma pasta do código
+    # Envio robusto: tenta enviar a foto, se falhar, envia apenas texto
     try:
-        with open('foto.jpg', 'rb') as photo:
-            bot.send_photo(mensagem.chat.id, photo, caption=texto, reply_markup=teclado, parse_mode="Markdown")
+        bot.send_photo(mensagem.chat.id, URL_FINAL, caption=texto, reply_markup=teclado, parse_mode="Markdown")
     except Exception as e:
-        # Se falhar, manda texto simples
+        print(f"Erro ao enviar foto: {e}")
         bot.send_message(mensagem.chat.id, texto, reply_markup=teclado, parse_mode="Markdown")
-        print(f"Erro ao ler foto: {e}")
 
 if __name__ == "__main__":
     threading.Thread(target=iniciar_servidor, daemon=True).start()

@@ -63,7 +63,7 @@ def enviar_start(mensagem):
     bot.send_message(mensagem.chat.id, texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
 
 # 5. Arranque principal (Servidor + Bot)
-if name == "main":
+if __name__ == "__main__":
     # Arranca o servidor web numa thread separada
     threading.Thread(target=iniciar_servidor, daemon=True).start()
     

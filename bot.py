@@ -4,6 +4,7 @@ import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import threading
 
+# Configuração do servidor keep-alive para o Render
 class KeepAliveHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -23,10 +24,8 @@ bot = telebot.TeleBot(CHAVE_API)
 TEU_CHAT_ID = 1963927934
 SEU_LINK = "https://partners.meratrack.xyz/click?o=901&a=1367"
 SEU_SUPORTE = "https://t.me/Paulo_miguel_23"
-
-# ESTE É O FILE_ID DA TUA FOTO QUE O TELEGRAM RECONHECE
-# Assim ele não precisa de links da internet, envia a foto que já lá está
-FOTO_ID = "AgACAgQAAxkBAAICaWefY9-lH-XgAAFRd-x2l-9Jd9n5jQAC368xG8O-8VLkXhRk_QAB9QEAAwIAA3kAAzYE"
+# Link estável e profissional da imagem
+URL_FOTO = "https://i.ibb.co/3sS7L7r/BIG-BASS-1000.jpg"
 
 membros_registados = set()
 
@@ -50,11 +49,17 @@ def enviar_start(mensagem):
     teclado.add(InlineKeyboardButton("🎰 ABRIR PLATAFORMA & GANHAR BÓNUS", url=SEU_LINK))
     teclado.add(InlineKeyboardButton("💬 Suporte VIP", url=SEU_SUPORTE))
 
-    # Envio forçado da foto pelo ID interno
-    bot.send_photo(mensagem.chat.id, FOTO_ID, caption=texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
+    # Tenta enviar foto, se falhar envia apenas texto
+    try:
+        bot.send_photo(mensagem.chat.id, URL_FOTO, caption=texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
+    except:
+        bot.send_message(mensagem.chat.id, texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
 
     if mensagem.chat.id != TEU_CHAT_ID:
-        bot.send_message(TEU_CHAT_ID, f"👤 Novo membro: {mensagem.from_user.first_name} (ID: {user_id})")
+        try:
+            bot.send_message(TEU_CHAT_ID, f"👤 Novo membro: {mensagem.from_user.first_name}\nTotal: {total_membros}")
+        except:
+            pass
 
 if __name__ == "__main__":
     threading.Thread(target=iniciar_servidor, daemon=True).start()

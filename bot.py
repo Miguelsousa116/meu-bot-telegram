@@ -1,4 +1,5 @@
 import os
+import time
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import threading
@@ -51,15 +52,22 @@ def enviar_start(mensagem):
         print(f"Erro ao enviar mensagem: {e}")
 
 if __name__ == "__main__":
-    # Inicia o servidor Keep-Alive
+    # Arranca o servidor web para o Render
     threading.Thread(target=iniciar_servidor, daemon=True).start()
     
-    print("A limpar conexões antigas do Telegram...")
+    # Limpa webhooks antigos e reseta conexões pendentes de forma forçada
     try:
-        # FORÇA A ELIMINAÇÃO DE QUALQUER SESSÃO ANTERIOR PRESA
         bot.remove_webhook()
-    except Exception:
+        time.sleep(1)
+    except:
         pass
 
-    print("Bot a iniciar polling...")
-    bot.infinity_polling(skip_pending=True)
+    print("Bot iniciado com sucesso e pronto a escutar...")
+    
+    # Loop de segurança contra quedas e conflitos de rede
+    while True:
+        try:
+            bot.polling(none_stop=True, interval=1, timeout=20)
+        except Exception as e:
+            print(f"Aviso de reinício de conexão: {e}")
+            time.sleep(3)

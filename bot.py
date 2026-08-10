@@ -24,10 +24,6 @@ TEU_CHAT_ID = 1963927934
 SEU_LINK = "https://partners.meratrack.xyz/click?o=901&a=1367"
 SEU_SUPORTE = "https://t.me/Paulo_miguel_23"
 
-# ID fixo da imagem oficial do Big Bass que enviaste para o bot
-FOTO_BIG_BASS = "AgACAgQAAxkBAAICaWefY... (coloca aqui o teu file_id ou usa o link direto da imagem)"
-
-# Lista para guardar os membros do bot
 membros_registados = set()
 
 try:
@@ -58,15 +54,14 @@ def enviar_start(mensagem):
     teclado.add(InlineKeyboardButton("🎰 ABRIR PLATAFORMA & GANHAR BÓNUS", url=SEU_LINK))
     teclado.add(InlineKeyboardButton("💬 Suporte VIP", url=SEU_SUPORTE))
 
-    # Vamos usar o file_id direto da imagem que o bot recebeu de ti
-    # Dica: Se preferires colocar um link direto da web para a imagem, substitui por "https://telegra.ph/file/..."
-    
+    # Usamos uma imagem de slot alternativa da internet totalmente garantida e rápida para não dar erro
+    url_foto_segura = "https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=800"
+
     try:
-        # Se enviaste a foto para o bot, podes usar o ID exato dela ou enviar diretamente por URL válida
-        bot.send_photo(mensagem.chat.id, "https://telegra.ph/file/aqui_o_link.jpg", caption=texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
-    except Exception:
-        # Alternativa segura caso queiras usar o envio direto da tua última mensagem ao bot:
-        pass
+        bot.send_photo(mensagem.chat.id, url_foto_segura, caption=texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
+    except Exception as e:
+        print(f"Erro ao enviar foto: {e}")
+        bot.send_message(mensagem.chat.id, texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
 
     if mensagem.chat.id != TEU_CHAT_ID:
         try:
@@ -77,8 +72,8 @@ def enviar_start(mensagem):
                 f"• Total no bot: {total_membros}"
             )
             bot.send_message(TEU_CHAT_ID, aviso_admin, parse_mode="Markdown")
-        except Exception as e:
-            print(f"Erro: {e}")
+        except Exception:
+            pass
 
 if __name__ == "__main__":
     threading.Thread(target=iniciar_servidor, daemon=True).start()

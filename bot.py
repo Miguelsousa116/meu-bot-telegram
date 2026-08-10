@@ -82,6 +82,6 @@ def enviar_boas_vindas(mensagem):
     except Exception as e:
         print(f"Erro ao enviar para o canal: {e}")
 
-if name == "main":
+if __name__ == "main":
     print("Bot a iniciar...")
     bot.infinity_polling()

@@ -1,6 +1,6 @@
 import os
-import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
+import threading
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -83,7 +83,5 @@ def enviar_boas_vindas(mensagem):
         bot.send_message(chat_id=CANAL_ID, text=texto_canal, parse_mode="Markdown", reply_markup=menu_afiliado())
     except Exception as e:
         print(f"Erro ao enviar para o canal: {e}")
-
     print("Bot a iniciar...")
-    
     bot.infinity_polling()

@@ -54,7 +54,7 @@ def enviar_start(mensagem):
 
     bot.send_message(mensagem.chat.id, texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
 
-if name == "main":
+if __name___ == "__main__":
     threading.Thread(target=iniciar_servidor, daemon=True).start()
     print("Bot a iniciar...")
     bot.infinity_polling()

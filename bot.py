@@ -20,23 +20,17 @@ def iniciar_servidor():
 CHAVE_API = "8529787659:AAEspqZLGxIvsDD27DQ1Hz_VTcwlnEmu64A"
 bot = telebot.TeleBot(CHAVE_API)
 
-# Link direto e permanente da imagem hospedada (não precisa de ficheiros internos)
-URL_FINAL = "https://i.ibb.co/L519V3r/1000017729.png"
-
-membros_registados = set()
+# O ID interno da tua foto no Telegram
+FOTO_ID = "AgACAgQAAxkBAAICaWefY9-lH-XgAAFRd-x2l-9Jd9n5jQAC368xG8O-8VLkXhRk_QAB9QEAAwIAA3kAAzYE"
 
 @bot.message_handler(commands=['start'])
 def enviar_start(mensagem):
-    membros_registados.add(mensagem.from_user.id)
-    total_membros = len(membros_registados)
-    
     texto = (
         "🔥 BEM-VINDO AO JACKPOT ZONE! 🔥\n\n"
         "🎁 PROMOÇÃO EXCLUSIVA DE HOJE:\n\n"
         "➡️ Deposita no mínimo 20€ e ganhas +20€ grátis!\n"
         "➡️ Mais Bónus Buy de graça na slot Big Bass 1000!\n"
         "➡️ Acesso Instantâneo à plataforma VIP!\n\n"
-        f"👥 Membros no Bot: {total_membros}\n\n"
         "👇 Clica no botão abaixo para abrir a plataforma e resgatar a tua promoção:"
     )
     
@@ -44,11 +38,12 @@ def enviar_start(mensagem):
     teclado.add(InlineKeyboardButton("🎰 ABRIR PLATAFORMA & GANHAR BÓNUS", url="https://partners.meratrack.xyz/click?o=901&a=1367"))
     teclado.add(InlineKeyboardButton("💬 Suporte VIP", url="https://t.me/Paulo_miguel_23"))
 
-    # Envio robusto: tenta enviar a foto, se falhar, envia apenas texto
     try:
-        bot.send_photo(mensagem.chat.id, URL_FINAL, caption=texto, reply_markup=teclado, parse_mode="Markdown")
+        # Tenta enviar a foto pelo ID interno
+        bot.send_photo(mensagem.chat.id, FOTO_ID, caption=texto, reply_markup=teclado, parse_mode="Markdown")
     except Exception as e:
-        print(f"Erro ao enviar foto: {e}")
+        # Se falhar (por exemplo, se o ID expirou), manda o texto
+        print(f"Erro na foto: {e}")
         bot.send_message(mensagem.chat.id, texto, reply_markup=teclado, parse_mode="Markdown")
 
 if __name__ == "__main__":

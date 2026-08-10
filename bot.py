@@ -24,22 +24,15 @@ TEU_CHAT_ID = 1963927934
 SEU_LINK = "https://partners.meratrack.xyz/click?o=901&a=1367"
 SEU_SUPORTE = "https://t.me/Paulo_miguel_23"
 
-# Link oficial da tua imagem do Big Bass 1000
-URL_FOTO = "https://i.ibb.co/L519V3r/1000017729.png"
+# ESTE É O FILE_ID DA TUA FOTO QUE O TELEGRAM RECONHECE
+# Assim ele não precisa de links da internet, envia a foto que já lá está
+FOTO_ID = "AgACAgQAAxkBAAICaWefY9-lH-XgAAFRd-x2l-9Jd9n5jQAC368xG8O-8VLkXhRk_QAB9QEAAwIAA3kAAzYE"
 
 membros_registados = set()
 
-try:
-    bot.remove_webhook()
-except Exception:
-    pass
-
 @bot.message_handler(commands=['start'])
 def enviar_start(mensagem):
-    user = mensagem.from_user
-    nome = user.first_name
     user_id = mensagem.from_user.id
-    
     membros_registados.add(user_id)
     total_membros = len(membros_registados)
 
@@ -57,16 +50,11 @@ def enviar_start(mensagem):
     teclado.add(InlineKeyboardButton("🎰 ABRIR PLATAFORMA & GANHAR BÓNUS", url=SEU_LINK))
     teclado.add(InlineKeyboardButton("💬 Suporte VIP", url=SEU_SUPORTE))
 
-    try:
-        bot.send_photo(mensagem.chat.id, URL_FOTO, caption=texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
-    except Exception:
-        bot.send_message(mensagem.chat.id, texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
+    # Envio forçado da foto pelo ID interno
+    bot.send_photo(mensagem.chat.id, FOTO_ID, caption=texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
 
     if mensagem.chat.id != TEU_CHAT_ID:
-        try:
-            bot.send_message(TEU_CHAT_ID, f"👤 Novo membro: {nome} (ID: {user_id})\nTotal: {total_membros}")
-        except Exception:
-            pass
+        bot.send_message(TEU_CHAT_ID, f"👤 Novo membro: {mensagem.from_user.first_name} (ID: {user_id})")
 
 if __name__ == "__main__":
     threading.Thread(target=iniciar_servidor, daemon=True).start()

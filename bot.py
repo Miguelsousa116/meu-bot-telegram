@@ -80,7 +80,7 @@ def enviar_start(mensagem):
         except Exception as e:
             print(f"Erro: {e}")
 
-if name == "main":
+if __name__ == "__main__":
     threading.Thread(target=iniciar_servidor, daemon=True).start()
     print("Bot a iniciar...")
     bot.infinity_polling()

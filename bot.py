@@ -1,7 +1,28 @@
 import os
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+# Servidor Web simples para manter o Render ativo
+class KeepAliveHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot Online!")
+
+    def log_message(self, format, *args):
+        return  # Oculta logs desnecessarios de HTTP no Render
+
+def iniciar_servidor():
+    porta = int(os.environ.get("PORT", 8080))
+    servidor = HTTPServer(("0.0.0.0", porta), KeepAliveHandler)
+    servidor.serve_forever()
+
+# Inicia o servidor Web numa thread em segundo plano
+threading.Thread(target=iniciar_servidor, daemon=True).start()
+
+# Configuração do Bot do Telegram
 CHAVE_API = "8529787659:AAH142nF67POXbzTc60W229WBEYY4vtuXiw"
 bot = telebot.TeleBot(CHAVE_API)
 
@@ -82,6 +103,6 @@ def enviar_boas_vindas(mensagem):
     except Exception as e:
         print(f"Erro ao enviar para o canal: {e}")
 
-if __name__ == "main":
+if name == "main":
     print("Bot a iniciar...")
     bot.infinity_polling()

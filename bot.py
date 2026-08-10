@@ -17,7 +17,7 @@ def iniciar_servidor():
     servidor = HTTPServer(("0.0.0.0", porta), KeepAliveHandler)
     servidor.serve_forever()
 
-CHAVE_API = "8529787659:AAHl42nF67POXbzTc6OW229WBEYY4vtuXiw"
+CHAVE_API = "8529787659:AAEspqZLGxIvsDD27DQ1Hz_VTcwlnEmu64A"
 bot = telebot.TeleBot(CHAVE_API)
 
 TEU_CHAT_ID = 1963927934

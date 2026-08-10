@@ -24,6 +24,9 @@ TEU_CHAT_ID = 1963927934
 SEU_LINK = "https://partners.meratrack.xyz/click?o=901&a=1367"
 SEU_SUPORTE = "https://t.me/Paulo_miguel_23"
 
+# Link oficial da tua imagem do Big Bass 1000
+URL_FOTO = "https://i.ibb.co/L519V3r/1000017729.png"
+
 membros_registados = set()
 
 try:
@@ -35,8 +38,8 @@ except Exception:
 def enviar_start(mensagem):
     user = mensagem.from_user
     nome = user.first_name
-    user_id = user.id
-
+    user_id = mensagem.from_user.id
+    
     membros_registados.add(user_id)
     total_membros = len(membros_registados)
 
@@ -54,28 +57,17 @@ def enviar_start(mensagem):
     teclado.add(InlineKeyboardButton("🎰 ABRIR PLATAFORMA & GANHAR BÓNUS", url=SEU_LINK))
     teclado.add(InlineKeyboardButton("💬 Suporte VIP", url=SEU_SUPORTE))
 
-    # Usamos uma imagem de slot alternativa da internet totalmente garantida e rápida para não dar erro
-    url_foto_segura = "https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=800"
-
     try:
-        bot.send_photo(mensagem.chat.id, url_foto_segura, caption=texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
-    except Exception as e:
-        print(f"Erro ao enviar foto: {e}")
+        bot.send_photo(mensagem.chat.id, URL_FOTO, caption=texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
+    except Exception:
         bot.send_message(mensagem.chat.id, texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
 
     if mensagem.chat.id != TEU_CHAT_ID:
         try:
-            aviso_admin = (
-                f"👤 NOVO MEMBRO NO BOT!\n\n"
-                f"• Nome: {nome}\n"
-                f"• ID: {user_id}\n"
-                f"• Total no bot: {total_membros}"
-            )
-            bot.send_message(TEU_CHAT_ID, aviso_admin, parse_mode="Markdown")
+            bot.send_message(TEU_CHAT_ID, f"👤 Novo membro: {nome} (ID: {user_id})\nTotal: {total_membros}")
         except Exception:
             pass
 
 if __name__ == "__main__":
     threading.Thread(target=iniciar_servidor, daemon=True).start()
-    print("Bot a iniciar...")
     bot.infinity_polling()

@@ -4,7 +4,6 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-# Servidor Keep-Alive para manter o Render acordado 24/7
 class KeepAliveHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -18,7 +17,6 @@ def iniciar_servidor():
     servidor = HTTPServer(("0.0.0.0", porta), KeepAliveHandler)
     servidor.serve_forever()
 
-# Configurações do Bot
 CHAVE_API = "8529787659:AAEspqZLGxIvsDD27DQ1Hz_VTcwlnEmu64A"
 bot = telebot.TeleBot(CHAVE_API)
 
@@ -47,14 +45,21 @@ def enviar_start(mensagem):
     teclado.add(InlineKeyboardButton("🎰 ABRIR PLATAFORMA & GANHAR BÓNUS", url=SEU_LINK))
     teclado.add(InlineKeyboardButton("💬 Suporte VIP", url=SEU_SUPORTE))
 
-    # Envia apenas texto e botões de forma limpa para garantir que nunca vai abaixo
     try:
         bot.send_message(mensagem.chat.id, texto, reply_markup=teclado, parse_mode="Markdown")
     except Exception as e:
         print(f"Erro ao enviar mensagem: {e}")
 
 if __name__ == "__main__":
-    # Inicia o servidor HTTP numa thread separada para o Render não desligar o bot
+    # Inicia o servidor Keep-Alive
     threading.Thread(target=iniciar_servidor, daemon=True).start()
-    print("Bot a iniciar...")
-    bot.infinity_polling()
+    
+    print("A limpar conexões antigas do Telegram...")
+    try:
+        # FORÇA A ELIMINAÇÃO DE QUALQUER SESSÃO ANTERIOR PRESA
+        bot.remove_webhook()
+    except Exception:
+        pass
+
+    print("Bot a iniciar polling...")
+    bot.infinity_polling(skip_pending=True)

@@ -23,6 +23,7 @@ bot = telebot.TeleBot(CHAVE_API)
 TEU_CHAT_ID = 1963927934
 SEU_LINK = "https://partners.meratrack.xyz/click?o=901&a=1367"
 SEU_SUPORTE = "https://t.me/Paulo_miguel_23"
+SEU_CANAL = "https://t.me/O_TEU_CANAL"  # <-- Coloca aqui o link do teu canal ou grupo do Telegram
 
 try:
     bot.remove_webhook()
@@ -36,23 +37,32 @@ def enviar_start(mensagem):
     username = f"@{user.username}" if user.username else "Sem username"
     user_id = user.id
 
+    # Notificação privada para ti a avisar que entrou alguém
     aviso = f"🚨 NOVO UTILIZADOR NO BOT!\n\nNome: {nome}\nUser: {username}\nID: {user_id}"
     bot.send_message(TEU_CHAT_ID, aviso, parse_mode="Markdown")
 
+    # Texto idêntico à imagem de exemplo que enviaste
     texto_boas_vindas = (
-        "🎰 BEM-VINDO AO JACKPOT ZONE!\n\n"
-        "🎁 PROMOÇÃO EXCLUSIVA DE HOJE:\n"
-        "➡️ Deposita no mínimo 20€ e ganhas +20€ grátis\n"
-        "➡️ Mais bónus buy na slot Big Bass 1000\n"
-        "➡️ Acesso Instantâneo à plataforma VIP\n\n"
-        "👇 Clica no botão abaixo para abrir a plataforma e resgatar a promoção:"
+        "🔥 BEM-VINDO AO JACKPOT ZONE! 🔥\n\n"
+        "🎁 PROMOÇÃO EXCLUSIVA DE HOJE:\n\n"
+        "➡️ Deposita no mínimo 20€ e ganhas +20€ grátis!\n"
+        "➡️ Mais Bónus Buy de graça na slot Big Bass 1000!\n"
+        "➡️ Acesso Instantâneo à plataforma VIP!\n\n"
+        "👇 Clica no botão abaixo para abrir a plataforma e resgatar a tua promoção:"
     )
 
     teclado = InlineKeyboardMarkup()
     teclado.add(InlineKeyboardButton("🎰 ABRIR PLATAFORMA & GANHAR BÓNUS", url=SEU_LINK))
+    teclado.add(InlineKeyboardButton("📢 Canal Oficial / VIP", url=SEU_CANAL))
     teclado.add(InlineKeyboardButton("💬 Suporte VIP", url=SEU_SUPORTE))
 
-    bot.send_message(mensagem.chat.id, texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
+    # Vamos enviar primeiro a foto idêntica à tua imagem e depois o texto com os botões
+    url_foto_exemplo = "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=800" # Foto temporária de alta qualidade estilo casino
+    
+    try:
+        bot.send_photo(mensagem.chat.id, url_foto_exemplo, caption=texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
+    except Exception:
+        bot.send_message(mensagem.chat.id, texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
 
 if __name__ == "__main__":
     threading.Thread(target=iniciar_servidor, daemon=True).start()

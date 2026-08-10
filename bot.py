@@ -28,7 +28,7 @@ SEU_LINK = "https://partners.meratrack.xyz/click?o=901&a=1367"
 SEU_SUPORTE = "https://t.me/Paulo_miguel_23"
 
 # 3. Arrancar o servidor web em primeiro plano (necessário para o Render)
-if name == "main":
+if __name__ == "__main__":
     import threading
     # Inicia o servidor web numa linha separada para manter a porta aberta
     threading.Thread(target=iniciar_servidor, daemon=True).start()

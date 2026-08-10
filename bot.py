@@ -21,14 +21,8 @@ CHAVE_API = "8529787659:AAEspqZLGxIvsDD27DQ1Hz_VTcwlnEmu64A"
 bot = telebot.TeleBot(CHAVE_API)
 
 TEU_CHAT_ID = 1963927934
-# Como o bot já é administrador do canal JACKPOT ZONE 🎁, 
-# se não souberes o ID numérico exato, podes colocar temporariamente 
-# o ID ou o link de convite do canal, ou usar o teu próprio chat ID para testar:
-DESTINO_CANAL = TEU_CHAT_ID  # Podes deixar assim para testar se chega a ti, ou por o ID do canal
-
 SEU_LINK = "https://partners.meratrack.xyz/click?o=901&a=1367"
 SEU_SUPORTE = "https://t.me/Paulo_miguel_23"
-URL_FOTO = "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=800"
 
 try:
     bot.remove_webhook()
@@ -53,17 +47,14 @@ def enviar_start(mensagem):
     teclado.add(InlineKeyboardButton("🎰 ABRIR PLATAFORMA & GANHAR BÓNUS", url=SEU_LINK))
     teclado.add(InlineKeyboardButton("💬 Suporte VIP", url=SEU_SUPORTE))
 
-    # Envia a foto e a mensagem para quem enviou o /start
+    # Vamos usar o URL direto de alta qualidade da imagem que enviaste
+    url_foto_oficial = "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=800"
+
     try:
-        bot.send_photo(mensagem.chat.id, URL_FOTO, caption=texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
+        # Tenta enviar a foto oficial com o texto e os botões
+        bot.send_photo(mensagem.chat.id, url_foto_oficial, caption=texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
     except Exception:
         bot.send_message(mensagem.chat.id, texto_boas_vindas, reply_markup=teclado, parse_mode="Markdown")
-
-    # Envia também a notificação para o destino configurado
-    try:
-        bot.send_photo(DESTINO_CANAL, URL_FOTO, caption=f"🔔 Novo Membro Iniciou o Bot: {nome}\n\n{texto_boas_vindas}", reply_markup=teclado, parse_mode="Markdown")
-    except Exception as e:
-        print(f"Erro ao enviar: {e}")
 
 if __name__ == "__main__":
     threading.Thread(target=iniciar_servidor, daemon=True).start()

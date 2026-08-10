@@ -1,31 +1,28 @@
 import os
-import time
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-import threading
-from http.server import HTTPServer, BaseHTTPRequestHandler
-
-class KeepAliveHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Bot Online!")
-    def log_message(self, format, *args):
-        return
-
-def iniciar_servidor():
-    porta = int(os.environ.get("PORT", 8080))
-    servidor = HTTPServer(("0.0.0.0", porta), KeepAliveHandler)
-    servidor.serve_forever()
+from flask import Flask, request
 
 CHAVE_API = "8529787659:AAEspqZLGxIvsDD27DQ1Hz_VTcwlnEmu64A"
-bot = telebot.TeleBot(CHAVE_API)
+bot = telebot.TeleBot(CHAVE_API, threaded=False)
+
+app = Flask(__name__)
 
 TEU_CHAT_ID = 1963927934
 SEU_LINK = "https://partners.meratrack.xyz/click?o=901&a=1367"
 SEU_SUPORTE = "https://t.me/Paulo_miguel_23"
-
 membros_registados = set()
+
+@app.route(f'/{CHAVE_API}', methods=['POST'])
+def receber_mensagem():
+    json_string = request.get_data().decode('utf-8')
+    update = telebot.types.Update.de_json(json_string)
+    bot.process_new_updates([update])
+    return "!", 200
+
+@app.route('/')
+def index():
+    return "Bot Online!", 200
 
 @bot.message_handler(commands=['start'])
 def enviar_start(mensagem):
@@ -50,33 +47,23 @@ def enviar_start(mensagem):
     teclado.add(InlineKeyboardButton("🎰 ABRIR PLATAFORMA & GANHAR BÓNUS", url=SEU_LINK))
     teclado.add(InlineKeyboardButton("💬 Suporte VIP", url=SEU_SUPORTE))
 
-    # Envia a mensagem para o utilizador
     try:
         bot.send_message(mensagem.chat.id, texto, reply_markup=teclado, parse_mode="Markdown")
     except Exception as e:
         print(f"Erro ao enviar mensagem: {e}")
 
-    # Envia a notificação para o teu chat privado (TEU_CHAT_ID)
     if mensagem.chat.id != TEU_CHAT_ID:
         try:
-            bot.send_message(TEU_CHAT_ID, f"👤 **Novo membro no bot!**\nNome: {nome}\nID: `{user_id}`\nTotal de membros: {total_membros}", parse_mode="Markdown")
+            bot.send_message(TEU_CHAT_ID, f"👤 **Novo membro no bot!**\nNome: {nome}\nID: `{user_id}`\nTotal: {total_membros}", parse_mode="Markdown")
         except Exception as e:
-            print(f"Erro ao enviar notificação para o admin: {e}")
+            print(f"Erro admin: {e}")
 
 if __name__ == "__main__":
-    threading.Thread(target=iniciar_servidor, daemon=True).start()
+    # URL do teu serviço no Render (substitui se o teu link for ligeiramente diferente)
+    RENDER_URL = "https://meu-bot-telegram-1-be72.onrender.com"
     
-    try:
-        bot.remove_webhook()
-        time.sleep(1)
-    except:
-        pass
-
-    print("Bot a iniciar...")
+    bot.remove_webhook()
+    bot.set_webhook(url=f"{RENDER_URL}/{CHAVE_API}")
     
-    while True:
-        try:
-            bot.polling(none_stop=True, interval=1, timeout=20)
-        except Exception as e:
-            print(f"Reconectando devido a: {e}")
-            time.sleep(3)
+    porta = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=porta)

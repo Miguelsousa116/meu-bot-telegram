@@ -4,6 +4,7 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
+# Servidor Keep-Alive para manter o Render acordado 24/7
 class KeepAliveHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -17,35 +18,43 @@ def iniciar_servidor():
     servidor = HTTPServer(("0.0.0.0", porta), KeepAliveHandler)
     servidor.serve_forever()
 
+# Configurações do Bot
 CHAVE_API = "8529787659:AAEspqZLGxIvsDD27DQ1Hz_VTcwlnEmu64A"
 bot = telebot.TeleBot(CHAVE_API)
 
-# O ID interno da tua foto no Telegram
-FOTO_ID = "AgACAgQAAxkBAAICaWefY9-lH-XgAAFRd-x2l-9Jd9n5jQAC368xG8O-8VLkXhRk_QAB9QEAAwIAA3kAAzYE"
+SEU_LINK = "https://partners.meratrack.xyz/click?o=901&a=1367"
+SEU_SUPORTE = "https://t.me/Paulo_miguel_23"
+
+membros_registados = set()
 
 @bot.message_handler(commands=['start'])
 def enviar_start(mensagem):
+    user_id = mensagem.from_user.id
+    membros_registados.add(user_id)
+    total_membros = len(membros_registados)
+    
     texto = (
         "🔥 BEM-VINDO AO JACKPOT ZONE! 🔥\n\n"
         "🎁 PROMOÇÃO EXCLUSIVA DE HOJE:\n\n"
         "➡️ Deposita no mínimo 20€ e ganhas +20€ grátis!\n"
         "➡️ Mais Bónus Buy de graça na slot Big Bass 1000!\n"
         "➡️ Acesso Instantâneo à plataforma VIP!\n\n"
+        f"👥 Membros no Bot: {total_membros}\n\n"
         "👇 Clica no botão abaixo para abrir a plataforma e resgatar a tua promoção:"
     )
     
     teclado = InlineKeyboardMarkup()
-    teclado.add(InlineKeyboardButton("🎰 ABRIR PLATAFORMA & GANHAR BÓNUS", url="https://partners.meratrack.xyz/click?o=901&a=1367"))
-    teclado.add(InlineKeyboardButton("💬 Suporte VIP", url="https://t.me/Paulo_miguel_23"))
+    teclado.add(InlineKeyboardButton("🎰 ABRIR PLATAFORMA & GANHAR BÓNUS", url=SEU_LINK))
+    teclado.add(InlineKeyboardButton("💬 Suporte VIP", url=SEU_SUPORTE))
 
+    # Envia apenas texto e botões de forma limpa para garantir que nunca vai abaixo
     try:
-        # Tenta enviar a foto pelo ID interno
-        bot.send_photo(mensagem.chat.id, FOTO_ID, caption=texto, reply_markup=teclado, parse_mode="Markdown")
-    except Exception as e:
-        # Se falhar (por exemplo, se o ID expirou), manda o texto
-        print(f"Erro na foto: {e}")
         bot.send_message(mensagem.chat.id, texto, reply_markup=teclado, parse_mode="Markdown")
+    except Exception as e:
+        print(f"Erro ao enviar mensagem: {e}")
 
 if __name__ == "__main__":
+    # Inicia o servidor HTTP numa thread separada para o Render não desligar o bot
     threading.Thread(target=iniciar_servidor, daemon=True).start()
+    print("Bot a iniciar...")
     bot.infinity_polling()
